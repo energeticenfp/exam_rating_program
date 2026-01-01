@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내신 등급 계산기 (9등급/5등급)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">내신 등급 산출기</h1>
+            <p class="text-gray-500 mt-2">학생 수와 석차를 입력하여 등급을 확인하세요.</p>
+        </div>
+
+        <div class="card p-6 mb-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">총 학생 수 (명)</label>
+                    <input type="number" id="totalStudents" placeholder="예: 200" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">본인 석차 (등)</label>
+                    <input type="number" id="rank" placeholder="예: 15" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                </div>
+                <button onclick="calculateGrades()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors">계산하기</button>
+            </div>
+        </div>
+
+        <div id="resultArea" class="hidden space-y-4">
+            <div class="card p-6 border-t-4 border-blue-500">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm font-semibold text-gray-500 uppercase">상위 백분율</span>
+                    <span id="percentResult" class="text-xl font-bold text-blue-600">0%</span>
+                </div>
+                <hr class="mb-4">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500 mb-1">9등급제</p>
+                        <p id="grade9" class="text-2xl font-bold text-gray-800">- 등급</p>
+                    </div>
+                    <div class="text-center p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500 mb-1">5등급제</p>
+                        <p id="grade5" class="text-2xl font-bold text-gray-800">- 등급</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 등급 기준표 (참고용) -->
+            <div class="text-xs text-gray-400 px-2">
+                <p>* 9등급제: 1(4%), 2(11%), 3(23%), 4(40%), 5(60%), 6(77%), 7(89%), 8(96%), 9(100%)</p>
+                <p>* 5등급제: 1(10%), 2(34%), 3(66%), 4(90%), 5(100%)</p>
+            </div>
+        </div>
+
+        <!-- 에러 메시지 -->
+        <div id="errorBox" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center">
+            올바른 숫자를 입력해 주세요.
+        </div>
+    </div>
+
+    <script>
+        function calculateGrades() {
+            const total = parseFloat(document.getElementById('totalStudents').value);
+            const rank = parseFloat(document.getElementById('rank').value);
+            const resultArea = document.getElementById('resultArea');
+            const errorBox = document.getElementById('errorBox');
+
+            if (!total || !rank || rank > total || rank <= 0 || total <= 0) {
+                resultArea.classList.add('hidden');
+                errorBox.classList.remove('hidden');
+                errorBox.innerText = rank > total ? "석차가 학생 수보다 클 수 없습니다." : "올바른 숫자를 입력해 주세요.";
+                return;
+            }
+
+            errorBox.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+
+            // 상위 백분율 계산
+            const percentage = (rank / total) * 100;
+            document.getElementById('percentResult').innerText = percentage.toFixed(2) + "%";
+
+            // 9등급제 판정
+            let g9 = "";
+            if (percentage <= 4) g9 = "1등급";
+            else if (percentage <= 11) g9 = "2등급";
+            else if (percentage <= 23) g9 = "3등급";
+            else if (percentage <= 40) g9 = "4등급";
+            else if (percentage <= 60) g9 = "5등급";
+            else if (percentage <= 77) g9 = "6등급";
+            else if (percentage <= 89) g9 = "7등급";
+            else if (percentage <= 96) g9 = "8등급";
+            else g9 = "9등급";
+
+            // 5등급제 판정
+            let g5 = "";
+            if (percentage <= 10) g5 = "1등급";
+            else if (percentage <= 34) g5 = "2등급";
+            else if (percentage <= 66) g5 = "3등급";
+            else if (percentage <= 90) g5 = "4등급";
+            else g5 = "5등급";
+
+            document.getElementById('grade9').innerText = g9;
+            document.getElementById('grade5').innerText = g5;
+        }
+    </script>
+</body>
+</html>
